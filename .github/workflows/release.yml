@@ -66,15 +66,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          printf '%s' "$SIGN_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/github-ci-signing.p12"
+          printf '%s' "$SIGN_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/github-ci-signing.jks"
         env:
           SIGN_KEYSTORE_BASE64: ${{ secrets.SIGN_KEYSTORE_BASE64 }}
 
       - name: Build module
         run: >-
           mvn -B -Duser.timezone=UTC clean install
-          -Dsign.keystore=$RUNNER_TEMP/github-ci-signing.p12
-          -Dsign.storetype=PKCS12
+          -Dsign.keystore=$RUNNER_TEMP/github-ci-signing.jks
+          -Dsign.storetype=JKS
           -Dsign.alias=${{ secrets.SIGN_KEY_ALIAS }}
           -Dsign.storepass=${{ secrets.SIGN_KEYSTORE_PASSWORD }}
           -Dsign.keypass=${{ secrets.SIGN_KEY_PASSWORD }}
