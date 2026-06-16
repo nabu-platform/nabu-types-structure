@@ -62,8 +62,21 @@ jobs:
       - name: Set module version
         run: mvn -B versions:set -DnewVersion=${{ steps.version.outputs.value }} -DgenerateBackupPoms=false
 
+      - name: Prepare signing keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$SIGN_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/github-ci-signing.p12"
+        env:
+          SIGN_KEYSTORE_BASE64: ${{ secrets.SIGN_KEYSTORE_BASE64 }}
+
       - name: Build module
-        run: mvn -B -Duser.timezone=UTC clean install
+        run: >-
+          mvn -B -Duser.timezone=UTC clean install
+          -Dsign.keystore=$RUNNER_TEMP/github-ci-signing.p12
+          -Dsign.alias=${{ secrets.SIGN_KEY_ALIAS }}
+          -Dsign.storepass=${{ secrets.SIGN_KEYSTORE_PASSWORD }}
+          -Dsign.keypass=${{ secrets.SIGN_KEY_PASSWORD }}
 
       - name: Collect release asset
         id: asset
