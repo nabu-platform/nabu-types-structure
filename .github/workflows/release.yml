@@ -74,6 +74,7 @@ jobs:
         run: >-
           mvn -B -Duser.timezone=UTC clean install
           -Dsign.keystore=$RUNNER_TEMP/github-ci-signing.p12
+          -Dsign.storetype=PKCS12
           -Dsign.alias=${{ secrets.SIGN_KEY_ALIAS }}
           -Dsign.storepass=${{ secrets.SIGN_KEYSTORE_PASSWORD }}
           -Dsign.keypass=${{ secrets.SIGN_KEY_PASSWORD }}
